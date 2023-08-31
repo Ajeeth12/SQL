@@ -1,4 +1,4 @@
-# Complete Sql 2023
+# Complete SQL 2023
 
 # Advanced SQL Mastery :crystal_ball:
 
