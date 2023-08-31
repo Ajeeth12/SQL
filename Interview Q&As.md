@@ -69,8 +69,7 @@
 ```
 -------
 
-
-
+## Top 3 Salaries in the Department
 
 ```sql
 
