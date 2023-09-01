@@ -99,3 +99,26 @@
   WHERE product_rank <=2
 ```
 -------
+
+## Supercloud Customer [Microsoft SQL Interview Question]
+
+```sql
+  --A Microsoft Azure Supercloud customer is defined as a company that purchases at least one product from each product category
+  --Write a query that effectively identifies the company ID of such Supercloud customers
+  WITH supercloud
+  AS (
+  	SELECT customers.customer_id
+  		,COUNT(DISTINCT products.product_category) AS unique_count
+  	FROM customer_contracts AS customers
+  	LEFT JOIN products ON customers.product_id = products.product_id
+  	GROUP BY customers.customer_id
+  	)
+  SELECT customer_id
+  FROM supercloud
+  WHERE unique_count = (
+  		SELECT COUNT(DISTINCT product_category)
+  		FROM products
+  		)
+  ORDER BY customer_id;
+```
+-------
