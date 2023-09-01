@@ -59,6 +59,7 @@
 ```sql
   --Given a table of tweet data over a specified time period, calculate the 3-day rolling average of tweets for each user
   --Output the user ID, tweet date, and rolling averages rounded to 2 decimal places
+
   SELECT user_id
   	,tweet_date
   	,ROUND(AVG(tweet_count) OVER (
@@ -69,3 +70,32 @@
   ```
 -------
 
+## Highest-Grossing Items [Amazon SQL Interview Question]
+
+```sql
+  --Assume you're given a table containing data on Amazon customers and their spending on products in different category,
+  --write a query to identify the top two highest-grossing products within each category in the year 2022
+  --The output should include the category, product, and total spend
+
+  SELECT
+    category,
+    product,
+    total_spend
+  FROM
+  (
+      SELECT
+          category,
+          product,
+          SUM(spend) AS total_spend,
+          ROW_NUMBER() OVER (PARTITION BY category ORDER BY SUM(spend) DESC) AS product_rank
+      FROM
+          product_spend
+      WHERE
+          EXTRACT(YEAR FROM transaction_date) = 2022
+      GROUP BY
+          category,
+          product
+  ) ranked_products
+  WHERE product_rank <=2
+```
+-------
