@@ -99,7 +99,7 @@
 -------
 
 ## 3. Before & After Analysis
-
+## Total Sales for 4 Weeks Before and After 2020-06-15
 ```sql
  -- Total sales for the 4 weeks before and after 2020-06-15
  WITH sales_before_after AS (
@@ -119,16 +119,15 @@
    ROUND(SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END), 2) AS sales_growth_or_reduction,
    ROUND((SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END)) / SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) * 100, 2) AS sales_percentage_change
  FROM
-   sales_before_after
- UNION ALL
- SELECT
-   'After' AS period,
-   SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) AS total_sales,
-   ROUND(SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END), 2) AS sales_growth_or_reduction,
-   ROUND((SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END)) / SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) * 100, 2) AS sales_percentage_change
- FROM
    sales_before_after;
- 
+
+```
+-------
+
+## Total Sales for the Entire 12 Weeks Before and After 2020-06-15
+
+```sql
+
  -- Total sales for the entire 12 weeks before and after 2020-06-15
  WITH sales_before_after AS (
    SELECT
@@ -144,8 +143,43 @@
  SELECT
    'Before' AS period,
    SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) AS total_sales,
-   ROUND(SUM(CASE WHEN week_date < '202
+   ROUND(SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END), 2) AS sales_growth_or_reduction,
+   ROUND((SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END)) / SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) * 100, 2) AS sales_percentage_change
+ FROM
+   sales_before_after;
+
 ```
+-------
 
+## Comparison with Previous Years (2018 and 2019)
 
-  
+```sql
+
+ -- Total sales for the 4 weeks before and after in 2018 and 2019
+ WITH sales_before_after AS (
+   SELECT
+     calendar_year,
+     week_date,
+     SUM(sales) AS total_sales
+   FROM
+     data_mart.clean_weekly_sales
+   WHERE
+     calendar_year IN (2018, 2019)
+     AND week_date >= '2018-06-01' AND week_date <= '2018-06-28'
+   GROUP BY
+     calendar_year, week_date
+ )
+ SELECT
+   calendar_year,
+   'Before' AS period,
+   SUM(CASE WHEN week_date < '2018-06-15' THEN total_sales ELSE 0 END) AS total_sales,
+   ROUND(SUM(CASE WHEN week_date < '2018-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2018-06-15' THEN total_sales ELSE 0 END), 2) AS sales_growth_or_reduction,
+   ROUND((SUM(CASE WHEN week_date < '2018-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2018-06-15' THEN total_sales ELSE 0 END)) / SUM(CASE WHEN week_date < '2018-06-15' THEN total_sales ELSE 0 END) * 100, 2) AS sales_percentage_change
+ FROM
+   sales_before_after
+ GROUP BY
+   calendar_year
+ ORDER BY
+   calendar_year;
+
+```
