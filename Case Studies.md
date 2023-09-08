@@ -98,5 +98,54 @@
 ```
 -------
 
+## 3. Before & After Analysis
+
+```sql
+ -- Total sales for the 4 weeks before and after 2020-06-15
+ WITH sales_before_after AS (
+   SELECT
+     week_date,
+     SUM(sales) AS total_sales
+   FROM
+     data_mart.clean_weekly_sales
+   WHERE
+     week_date >= '2020-06-01' AND week_date <= '2020-06-28'
+   GROUP BY
+     week_date
+ )
+ SELECT
+   'Before' AS period,
+   SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) AS total_sales,
+   ROUND(SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END), 2) AS sales_growth_or_reduction,
+   ROUND((SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END)) / SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) * 100, 2) AS sales_percentage_change
+ FROM
+   sales_before_after
+ UNION ALL
+ SELECT
+   'After' AS period,
+   SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) AS total_sales,
+   ROUND(SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END), 2) AS sales_growth_or_reduction,
+   ROUND((SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) - SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END)) / SUM(CASE WHEN week_date >= '2020-06-15' THEN total_sales ELSE 0 END) * 100, 2) AS sales_percentage_change
+ FROM
+   sales_before_after;
+ 
+ -- Total sales for the entire 12 weeks before and after 2020-06-15
+ WITH sales_before_after AS (
+   SELECT
+     week_date,
+     SUM(sales) AS total_sales
+   FROM
+     data_mart.clean_weekly_sales
+   WHERE
+     week_date >= '2020-05-11' AND week_date <= '2020-08-02'
+   GROUP BY
+     week_date
+ )
+ SELECT
+   'Before' AS period,
+   SUM(CASE WHEN week_date < '2020-06-15' THEN total_sales ELSE 0 END) AS total_sales,
+   ROUND(SUM(CASE WHEN week_date < '202
+```
+
 
   
